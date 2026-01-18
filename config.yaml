@@ -1,0 +1,170 @@
+# ============================================================================
+# BlenderProc Shackle Data Generation Configuration
+# ============================================================================
+# Project: Sim-to-Real Synthetic Data for Industrial Shackle Wear Detection
+# Author: Maidah Binte Tariq
+# Date: January 2025
+# ============================================================================
+
+# Number of images to generate
+num_images: 1000
+
+# Output image resolution
+resolution:
+  width: 1920
+  height: 1080
+
+# Wear level configuration with probability weights
+# Weights are normalized automatically (don't need to sum to 1)
+wear_levels:
+  - level: 0.00
+    weight: 0.15
+    blend_file: "Shackle_00_Clean.blend"
+    category_name: "shackle_clean"
+    
+  - level: 0.25
+    weight: 0.25
+    blend_file: "Shackle_25_Moderate.blend"
+    category_name: "shackle_worn_25"
+    
+  - level: 0.50
+    weight: 0.35
+    blend_file: "Shackle_50_Heavy.blend"
+    category_name: "shackle_worn_50"
+    
+  - level: 0.75
+    weight: 0.25
+    blend_file: "Shackle_75_Severe.blend"
+    category_name: "shackle_worn_75"
+
+# Camera configuration (drone perspective simulation)
+camera:
+  # Lens focal length in millimeters
+  lens_mm: 50
+  
+  # Distance from object center (in scene units, typically mm)
+  distance_range: [400, 800]
+  
+  # Elevation angle from horizontal (degrees)
+  # Lower = more horizontal, Higher = more top-down
+  elevation_range: [20, 60]
+  
+  # Azimuth angle (degrees) - full rotation around object
+  azimuth_range: [0, 360]
+  
+  # Depth of field settings for background blur
+  dof_enabled: true
+  dof_fstop: 2.8  # Lower = more blur (wider aperture)
+  
+  # Small random roll for natural camera feel
+  roll_range: [-5, 5]
+
+# Lighting configuration
+lighting:
+  # HDRI environment strength multiplier
+  hdri_strength_range: [0.5, 1.5]
+  
+  # Random HDRI rotation (degrees)
+  hdri_rotation_range: [0, 360]
+  
+  # Additional sun lamp settings
+  sun_enabled: true
+  sun_energy_range: [1.0, 5.0]
+  sun_elevation_range: [30, 80]
+  sun_azimuth_range: [0, 360]
+  sun_color_temp_range: [5000, 6500]  # Kelvin
+
+# Material randomization
+materials:
+  # Enable color variation on rust
+  color_variation: true
+  
+  # Rust color HSV ranges (normalized 0-1)
+  rust_hue_range: [0.02, 0.08]       # Orange-brown
+  rust_saturation_range: [0.6, 0.9]
+  rust_value_range: [0.3, 0.6]
+  
+  # Steel color variation
+  steel_variation: false
+  steel_roughness_range: [0.4, 0.6]
+
+# Background configuration
+background:
+  # Probability of using HDRI vs real image backgrounds
+  hdri_probability: 0.7
+  
+  # Apply additional blur to background images
+  blur_backgrounds: true
+  blur_strength: 15  # Gaussian blur kernel size
+  
+  # Color grading variation
+  color_grade_variation: true
+
+# Render settings
+render:
+  engine: "CYCLES"
+  device: "GPU"
+  samples: 128
+  
+  # Adaptive sampling
+  use_adaptive_sampling: true
+  adaptive_threshold: 0.005
+  
+  # Denoising
+  use_denoising: true
+  denoiser: "OPENIMAGEDENOISE"  # Options: OPENIMAGEDENOISE, OPTIX
+  
+  # Color management
+  view_transform: "Filmic"
+  look: "Medium Contrast"
+  exposure: 0.0
+  gamma: 1.0
+
+# Output configuration
+output:
+  # Image format (PNG recommended for quality)
+  format: "PNG"
+  quality: 100  # For JPEG
+  
+  # Save additional passes
+  save_depth: false
+  save_normals: false
+  save_segmentation: true
+  
+  # Naming convention
+  # Pattern: {prefix}_{wear}_{index:06d}.{ext}
+  filename_prefix: "shackle"
+
+# Post-processing (applied after rendering)
+postprocess:
+  # Add noise to soften perfect edges (professor's requirement)
+  edge_noise: true
+  edge_noise_strength: 0.02
+  
+  # Slight overall image noise
+  image_noise: true
+  image_noise_strength: 0.01
+  
+  # Color jitter
+  color_jitter: true
+  brightness_range: [-0.1, 0.1]
+  contrast_range: [0.9, 1.1]
+  saturation_range: [0.9, 1.1]
+
+# Annotation settings
+annotations:
+  format: "COCO"  # Options: COCO, YOLO, PASCAL_VOC
+  
+  # Include additional metadata
+  include_camera_params: true
+  include_lighting_params: true
+  include_material_params: true
+
+# Logging
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  save_log: true
+  log_file: "generation.log"
+
+# Reproducibility
+seed: null  # Set to integer for reproducible generation
